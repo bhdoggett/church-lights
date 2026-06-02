@@ -52,3 +52,9 @@ export function deleteScene(id: string): void {
 export function setCompanionPort(port: number): void {
   store.set('companionPort', port)
 }
+
+export function replaceConfig(config: Config): void {
+  store.set('fixtures', config.fixtures)
+  store.set('scenes', config.scenes)
+  store.set('companionPort', config.companionPort)
+}

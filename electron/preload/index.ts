@@ -17,6 +17,9 @@ const api = {
   onDmxStatus: (cb: (status: DmxStatus) => void) => {
     ipcRenderer.on('dmx:status', (_e, status) => cb(status))
   },
+
+  exportShow: () => ipcRenderer.invoke('show:export'),
+  importShow: () => ipcRenderer.invoke('show:import'),
 }
 
 contextBridge.exposeInMainWorld('electronAPI', api)

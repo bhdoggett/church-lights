@@ -34,11 +34,27 @@ export function App() {
     setConfig((c) => c ? { ...c, companionPort: port } : c)
   }
 
+  const handleExport = async () => {
+    await window.electronAPI.exportShow()
+  }
+
+  const handleImport = async () => {
+    const imported = await window.electronAPI.importShow()
+    if (imported) setConfig(imported)
+  }
+
   return (
     <div className={styles.app}>
       <header className={styles.header}>
         <span className={styles.appName}>Church Lights</span>
         <div className={styles.headerRight}>
+          <button className={styles.showBtn} onClick={handleImport} title="Load a show file">
+            Open Show
+          </button>
+          <button className={styles.showBtn} onClick={handleExport} title="Save show to file">
+            Save Show
+          </button>
+          <div className={styles.showDivider} />
           <ConnectionBadge status={dmxStatus} />
           {view === 'main' && (
             <button className={styles.iconBtn} onClick={() => setView('setup')} title="Setup">

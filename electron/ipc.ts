@@ -1,7 +1,8 @@
 import { ipcMain } from 'electron'
 import { v4 as uuid } from 'uuid'
 import { makeSceneId } from './slug'
-import { getConfig, saveFixture, deleteFixture, saveScene, deleteScene, setCompanionPort } from './store'
+import { getConfig, saveFixture, deleteFixture, saveScene, deleteScene, setCompanionPort, replaceConfig } from './store'
+import { exportShow, importShow } from './show'
 import type { DmxManager } from './dmx'
 import type { Fixture, SaveSceneArgs, SetChannelArgs } from '../src/shared/types'
 
@@ -49,5 +50,16 @@ export function registerIpcHandlers(dmxManager: DmxManager): void {
 
   ipcMain.handle('fixture:delete', (_e, { id }: { id: string }) => {
     deleteFixture(id)
+  })
+
+  ipcMain.handle('show:export', async () => {
+    return exportShow(getConfig())
+  })
+
+  ipcMain.handle('show:import', async () => {
+    const config = await importShow()
+    if (!config) return null
+    replaceConfig(config)
+    return config
   })
 }

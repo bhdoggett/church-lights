@@ -43,6 +43,28 @@
   background: var(--bg-overlay);
 }
 
+.showBtn {
+  padding: 4px 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.showBtn:hover {
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+}
+
+.showDivider {
+  width: 1px;
+  height: 18px;
+  background: var(--border-default);
+}
+
 .content {
   flex: 1;
   overflow: hidden;
