@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { ScenesStrip } from '../components/ScenesStrip'
 import { FixtureFader } from '../components/FixtureFader'
 import { FixtureToggle } from '../components/FixtureToggle'
@@ -9,15 +9,13 @@ import type { Fixture, Scene } from '../../shared/types'
 interface Props {
   fixtures: Fixture[]
   scenes: Scene[]
-  activeSceneId: string | null
-  onActivate: (id: string) => void
   onScenesChange: (scenes: Scene[]) => void
-  onActiveSceneChange: (id: string | null) => void
 }
 
-export function MainView({ fixtures, scenes, activeSceneId, onActivate, onScenesChange, onActiveSceneChange }: Props) {
+export function MainView({ fixtures, scenes, onScenesChange }: Props) {
   const ipc = useIpc()
   const { getChannel, setChannel: setLocal, applyScene } = useDmxState()
+  const [activeSceneId, setActiveSceneId] = useState<string | null>(null)
 
   const handleSetChannel = useCallback((fixture: Fixture, value: number) => {
     setLocal(fixture.universe, fixture.channel, value)
@@ -27,11 +25,10 @@ export function MainView({ fixtures, scenes, activeSceneId, onActivate, onScenes
   const handleActivate = useCallback(async (id: string) => {
     const scene = scenes.find((s) => s.id === id)
     if (!scene) return
-    onActiveSceneChange(id)
+    setActiveSceneId(id)
     applyScene(scene.values, fixtures)
-    onActivate(id)
     await ipc.loadScene(id)
-  }, [scenes, fixtures, ipc, applyScene, onActivate, onActiveSceneChange])
+  }, [scenes, fixtures, ipc, applyScene])
 
   const handleSave = useCallback(async (name: string, fadeDuration: number) => {
     const values: Record<string, number> = {}
