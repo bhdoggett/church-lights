@@ -46,15 +46,27 @@ export function MainView({ fixtures, scenes, onScenesChange, onFixturesChange }:
     onScenesChange([...scenes, saved])
   }, [fixtures, scenes, ipc, getChannel, onScenesChange])
 
-  // Rename a named fixture (from Scenes view)
+  // Rename a named fixture (from Scenes view) — empty name removes it
   const handleFixtureRename = useCallback(async (fixture: Fixture, name: string) => {
-    const updated = await ipc.updateFixture({ ...fixture, name })
-    onFixturesChange(fixtures.map((f) => f.id === updated.id ? updated : f))
+    if (!name) {
+      await ipc.deleteFixture(fixture.id)
+      onFixturesChange(fixtures.filter((f) => f.id !== fixture.id))
+    } else {
+      const updated = await ipc.updateFixture({ ...fixture, name })
+      onFixturesChange(fixtures.map((f) => f.id === updated.id ? updated : f))
+    }
   }, [fixtures, ipc, onFixturesChange])
 
-  // Rename by channel from Live view — creates fixture if none exists
+  // Rename by channel from Live view — creates fixture if none exists, empty name removes it
   const handleChannelRename = useCallback(async (channel: number, name: string) => {
     const existing = fixtures.find((f) => f.universe === universe && f.channel === channel)
+    if (!name) {
+      if (existing) {
+        await ipc.deleteFixture(existing.id)
+        onFixturesChange(fixtures.filter((f) => f.id !== existing.id))
+      }
+      return
+    }
     const fixtureToSave: Fixture = existing
       ? { ...existing, name }
       : { id: crypto.randomUUID(), name, channel, universe, type: 'dimmer' }

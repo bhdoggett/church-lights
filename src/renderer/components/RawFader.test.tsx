@@ -84,4 +84,14 @@ describe('RawFader', () => {
     fireEvent.blur(input)
     expect(onRename).toHaveBeenCalledWith('Spotlight')
   })
+
+  it('calls onRename with empty string when name is cleared', async () => {
+    const onRename = vi.fn()
+    render(<RawFader channel={1} value={0} label="Old Name" onChange={vi.fn()} onRename={onRename} />)
+    await userEvent.click(screen.getByText('Old Name'))
+    const input = screen.getByTestId('rename-input')
+    fireEvent.change(input, { target: { value: '' } })
+    fireEvent.keyDown(input, { key: 'Enter' })
+    expect(onRename).toHaveBeenCalledWith('')
+  })
 })

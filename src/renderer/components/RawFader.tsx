@@ -26,8 +26,7 @@ export function RawFader({ channel, value, label, onChange, onRename }: Props) {
 
   const commitEdit = () => {
     setEditing(false)
-    const name = draft.trim()
-    if (name && onRename) onRename(name)
+    if (onRename) onRename(draft.trim())
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
