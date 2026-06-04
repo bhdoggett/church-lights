@@ -62,10 +62,10 @@
 
 .fixtures {
   flex: 1;
-  padding: 24px;
+  padding: var(--space-6);
   display: flex;
   flex-wrap: wrap;
-  gap: 24px;
+  gap: var(--space-4);
   align-content: flex-start;
   overflow-y: auto;
 }
