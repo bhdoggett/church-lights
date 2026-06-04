@@ -19,6 +19,7 @@ export interface Config {
   fixtures: Fixture[]
   scenes: Scene[]
   companionPort: number // default 3000
+  devicePath: string   // e.g. /dev/tty.usbserial-XXXXX, empty = no connection
 }
 
 // Sent from main → renderer whenever DMX connection state changes

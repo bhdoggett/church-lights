@@ -34,9 +34,12 @@ export function App() {
     setConfig((c) => c ? { ...c, companionPort: port } : c)
   }
 
-  const handleExport = async () => {
-    await window.electronAPI.exportShow()
+  const handleDevicePathChange = async (path: string) => {
+    await window.electronAPI.setDevicePath(path)
+    setConfig((c) => c ? { ...c, devicePath: path } : c)
   }
+
+  const handleExport = () => window.electronAPI.exportShow()
 
   const handleImport = async () => {
     const imported = await window.electronAPI.importShow()
@@ -61,8 +64,8 @@ export function App() {
               ⚙
             </button>
           )}
-          <button className={styles.iconBtn} onClick={() => setCompanionOpen(true)} title="Companion">
-            ℹ
+          <button className={styles.iconBtn} onClick={() => setCompanionOpen(true)} title="Settings">
+            ⚙︎
           </button>
         </div>
       </header>
@@ -87,7 +90,9 @@ export function App() {
         <CompanionModal
           scenes={config.scenes}
           port={config.companionPort}
+          devicePath={config.devicePath}
           onPortChange={handlePortChange}
+          onDevicePathChange={handleDevicePathChange}
           onClose={() => setCompanionOpen(false)}
         />
       )}

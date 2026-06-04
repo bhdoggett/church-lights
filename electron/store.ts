@@ -6,6 +6,7 @@ const store = new Store<Config>({
     fixtures: [],
     scenes: [],
     companionPort: 3000,
+    devicePath: '',
   },
 })
 
@@ -14,6 +15,7 @@ export function getConfig(): Config {
     fixtures: store.get('fixtures', []),
     scenes: store.get('scenes', []),
     companionPort: store.get('companionPort', 3000),
+    devicePath: store.get('devicePath', ''),
   }
 }
 
@@ -53,8 +55,13 @@ export function setCompanionPort(port: number): void {
   store.set('companionPort', port)
 }
 
+export function setDevicePath(path: string): void {
+  store.set('devicePath', path)
+}
+
 export function replaceConfig(config: Config): void {
   store.set('fixtures', config.fixtures)
   store.set('scenes', config.scenes)
   store.set('companionPort', config.companionPort)
+  store.set('devicePath', config.devicePath ?? '')
 }

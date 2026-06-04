@@ -5,12 +5,15 @@ import styles from './CompanionModal.module.css'
 interface Props {
   scenes: Scene[]
   port: number
+  devicePath: string
   onPortChange: (port: number) => void
+  onDevicePathChange: (path: string) => void
   onClose: () => void
 }
 
-export function CompanionModal({ scenes, port, onPortChange, onClose }: Props) {
+export function CompanionModal({ scenes, port, devicePath, onPortChange, onDevicePathChange, onClose }: Props) {
   const [draftPort, setDraftPort] = useState(String(port))
+  const [draftPath, setDraftPath] = useState(devicePath)
   const base = `http://localhost:${port}`
 
   const copyToClipboard = (text: string) => navigator.clipboard?.writeText(text)
@@ -19,12 +22,32 @@ export function CompanionModal({ scenes, port, onPortChange, onClose }: Props) {
     <div className={styles.backdrop}>
       <div className={styles.panel}>
         <div className={styles.header}>
-          <h2 className={styles.title}>Bitfocus Companion Setup</h2>
+          <h2 className={styles.title}>Settings</h2>
           <button className={styles.closeBtn} onClick={onClose}>×</button>
         </div>
 
         <section className={styles.section}>
-          <h3 className={styles.sectionTitle}>HTTP Port</h3>
+          <h3 className={styles.sectionTitle}>DMX Device Path</h3>
+          <div className={styles.portRow}>
+            <input
+              type="text"
+              className={styles.pathInput}
+              value={draftPath}
+              onChange={(e) => setDraftPath(e.target.value)}
+              placeholder="/dev/tty.usbserial-XXXXX"
+              spellCheck={false}
+            />
+            <button className={styles.savePortBtn} onClick={() => onDevicePathChange(draftPath.trim())}>
+              Connect
+            </button>
+          </div>
+          <p className={styles.portHint}>
+            Find your device: <code className={styles.inlineCode}>ls /dev/tty.usb*</code>
+          </p>
+        </section>
+
+        <section className={styles.section}>
+          <h3 className={styles.sectionTitle}>Companion HTTP Port</h3>
           <div className={styles.portRow}>
             <input
               type="number"

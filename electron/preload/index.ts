@@ -18,6 +18,8 @@ const api = {
     ipcRenderer.on('dmx:status', (_e, status) => cb(status))
   },
 
+  setDevicePath: (path: string) => ipcRenderer.invoke('config:setDevicePath', { path }),
+
   exportShow: () => ipcRenderer.invoke('show:export'),
   importShow: () => ipcRenderer.invoke('show:import'),
 }

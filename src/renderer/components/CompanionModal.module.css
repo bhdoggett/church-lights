@@ -65,6 +65,31 @@
   align-items: center;
 }
 
+.pathInput {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  min-width: 0;
+}
+
+.pathInput:focus {
+  outline: 1px solid var(--accent);
+}
+
+.inlineCode {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+  background: var(--bg-surface);
+  padding: 1px 5px;
+  border-radius: var(--radius-sm);
+}
+
 .portInput {
   width: 100px;
   padding: 6px 10px;

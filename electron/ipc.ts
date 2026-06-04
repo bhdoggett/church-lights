@@ -1,16 +1,21 @@
 import { ipcMain } from 'electron'
 import { v4 as uuid } from 'uuid'
 import { makeSceneId } from './slug'
-import { getConfig, saveFixture, deleteFixture, saveScene, deleteScene, setCompanionPort, replaceConfig } from './store'
+import { getConfig, saveFixture, deleteFixture, saveScene, deleteScene, setCompanionPort, setDevicePath, replaceConfig } from './store'
 import { exportShow, importShow } from './show'
 import type { DmxManager } from './dmx'
 import type { Fixture, SaveSceneArgs, SetChannelArgs } from '../src/shared/types'
 
-export function registerIpcHandlers(dmxManager: DmxManager): void {
+export function registerIpcHandlers(dmxManager: DmxManager, onDevicePathChange: (path: string) => void): void {
   ipcMain.handle('config:get', () => getConfig())
 
   ipcMain.handle('config:setPort', (_e, { port }: { port: number }) => {
     setCompanionPort(port)
+  })
+
+  ipcMain.handle('config:setDevicePath', (_e, { path }: { path: string }) => {
+    setDevicePath(path)
+    onDevicePathChange(path)
   })
 
   ipcMain.handle('dmx:setChannel', (_e, args: SetChannelArgs) => {

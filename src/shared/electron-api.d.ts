@@ -12,6 +12,7 @@ declare global {
       updateFixture: (fixture: Fixture) => Promise<Fixture>
       deleteFixture: (id: string) => Promise<void>
       onDmxStatus: (cb: (status: DmxStatus) => void) => void
+      setDevicePath: (path: string) => Promise<void>
       exportShow: () => Promise<boolean>
       importShow: () => Promise<Config | null>
     }

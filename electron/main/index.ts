@@ -8,6 +8,10 @@ import { getConfig } from '../store'
 let mainWindow: BrowserWindow | null = null
 const dmxManager = new DmxManager()
 
+function sendDmxStatus(status: string): void {
+  mainWindow?.webContents.send('dmx:status', status)
+}
+
 function createWindow(): void {
   mainWindow = new BrowserWindow({
     width: 1200,
@@ -28,11 +32,19 @@ function createWindow(): void {
   }
 }
 
+function tryConnect(devicePath: string): void {
+  if (!devicePath) return
+  dmxManager.connect(devicePath, sendDmxStatus)
+}
+
 app.whenReady().then(() => {
-  registerIpcHandlers(dmxManager)
+  registerIpcHandlers(dmxManager, (newPath) => {
+    tryConnect(newPath)
+  })
   createWindow()
 
   const config = getConfig()
+
   const server = createCompanionServer(
     () => getConfig().scenes,
     (sceneId) => {
@@ -51,11 +63,8 @@ app.whenReady().then(() => {
     console.log(`Companion server listening on port ${config.companionPort}`)
   })
 
-  // Attempt DMX connection — non-fatal if hardware not present
-  // Device path is a placeholder; configure via Companion modal
-  dmxManager.connect('/dev/tty.usbserial-0', (status) => {
-    mainWindow?.webContents.send('dmx:status', status)
-  })
+  // Only connect if a device path has been configured
+  tryConnect(config.devicePath)
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
