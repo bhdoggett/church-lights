@@ -1,11 +1,11 @@
 import { ipcMain } from 'electron'
 import { v4 as uuid } from 'uuid'
 import { makeSceneId } from './slug'
-import { getConfig, saveFixture, deleteFixture, saveScene, deleteScene, setCompanionPort, setDevicePath, setDmxOutputPort, replaceConfig } from './store'
+import { getConfig, saveFixture, deleteFixture, saveScene, deleteScene, setCompanionPort, setDevicePath, setDmxOutputPort, replaceConfig, updateScene, reorderScenes } from './store'
 import { exportShow, importShow } from './show'
 import { listSerialPorts } from './ports'
 import type { DmxManager } from './dmx'
-import type { Fixture, SaveSceneArgs, SetChannelArgs } from '../src/shared/types'
+import type { Fixture, SaveSceneArgs, SetChannelArgs, UpdateSceneArgs } from '../src/shared/types'
 
 export function registerIpcHandlers(dmxManager: DmxManager, onReconnect: (path: string) => void): void {
   ipcMain.handle('config:get', () => getConfig())
@@ -51,6 +51,15 @@ export function registerIpcHandlers(dmxManager: DmxManager, onReconnect: (path: 
 
   ipcMain.handle('scene:delete', (_e, { id }: { id: string }) => {
     deleteScene(id)
+  })
+
+  ipcMain.handle('scene:update', (_e, args: UpdateSceneArgs) => {
+    updateScene(args.id, args.name, args.fadeDuration)
+    return getConfig().scenes.find((s) => s.id === args.id) ?? null
+  })
+
+  ipcMain.handle('scene:reorder', (_e, { ids }: { ids: string[] }) => {
+    reorderScenes(ids)
   })
 
   ipcMain.handle('fixture:update', (_e, fixture: Fixture) => {

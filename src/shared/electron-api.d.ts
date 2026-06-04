@@ -1,4 +1,4 @@
-import type { Fixture, Config, Scene, SaveSceneArgs, SetChannelArgs, DmxStatus } from './types'
+import type { Fixture, Config, Scene, SaveSceneArgs, SetChannelArgs, DmxStatus, UpdateSceneArgs } from './types'
 
 declare global {
   interface Window {
@@ -9,6 +9,8 @@ declare global {
       saveScene: (args: SaveSceneArgs) => Promise<Scene>
       loadScene: (id: string) => Promise<void>
       deleteScene: (id: string) => Promise<void>
+      updateScene: (args: UpdateSceneArgs) => Promise<Scene | null>
+      reorderScenes: (ids: string[]) => Promise<void>
       updateFixture: (fixture: Fixture) => Promise<Fixture>
       deleteFixture: (id: string) => Promise<void>
       onDmxStatus: (cb: (status: DmxStatus) => void) => void

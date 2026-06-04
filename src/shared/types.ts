@@ -38,3 +38,9 @@ export interface SaveSceneArgs {
   fadeDuration: number
   values: Record<string, number> // fixtureId → 0–255
 }
+
+export interface UpdateSceneArgs {
+  id: string
+  name: string
+  fadeDuration: number
+}
