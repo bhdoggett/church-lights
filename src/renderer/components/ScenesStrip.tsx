@@ -85,10 +85,13 @@ export function ScenesStrip({ scenes, activeSceneId, onActivate, onSave, onUpdat
 
   const activeScene = scenes.find((s) => s.id === activeSceneId) ?? null
 
-  const handleDrop = (targetId: string) => {
-    if (!dragId || dragId === targetId) return
-    const from = scenes.findIndex((s) => s.id === dragId)
+  const handleDrop = (e: React.DragEvent, targetId: string) => {
+    e.preventDefault()
+    const sourceId = e.dataTransfer.getData('text/plain')
+    if (!sourceId || sourceId === targetId) return
+    const from = scenes.findIndex((s) => s.id === sourceId)
     const to = scenes.findIndex((s) => s.id === targetId)
+    if (from === -1 || to === -1) return
     const reordered = [...scenes]
     const [moved] = reordered.splice(from, 1)
     reordered.splice(to, 0, moved)
@@ -111,9 +114,13 @@ export function ScenesStrip({ scenes, activeSceneId, onActivate, onSave, onUpdat
           ].filter(Boolean).join(' ')}
           aria-pressed={scene.id === activeSceneId}
           draggable
-          onDragStart={() => setDragId(scene.id)}
-          onDragOver={(e) => { e.preventDefault(); setDragOverId(scene.id) }}
-          onDrop={() => handleDrop(scene.id)}
+          onDragStart={(e) => {
+            setDragId(scene.id)
+            e.dataTransfer.effectAllowed = 'move'
+            e.dataTransfer.setData('text/plain', scene.id)
+          }}
+          onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; setDragOverId(scene.id) }}
+          onDrop={(e) => handleDrop(e, scene.id)}
           onDragEnd={() => { setDragId(null); setDragOverId(null) }}
         >
           {scene.name}
