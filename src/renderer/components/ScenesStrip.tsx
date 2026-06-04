@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import type { Scene } from '../../shared/types'
 import styles from './ScenesStrip.module.css'
 
@@ -81,51 +81,86 @@ export function ScenesStrip({ scenes, activeSceneId, onActivate, onSave, onUpdat
   const [saving, setSaving] = useState(false)
   const [editing, setEditing] = useState(false)
   const [dragId, setDragId] = useState<string | null>(null)
-  const [dragOverId, setDragOverId] = useState<string | null>(null)
+  const [insertIndex, setInsertIndex] = useState<number | null>(null)
 
   const activeScene = scenes.find((s) => s.id === activeSceneId) ?? null
 
-  const handleDrop = (e: React.DragEvent, targetId: string) => {
+  // Compute where to insert by finding the first button whose midpoint is to the right of the cursor
+  const computeInsertIndex = (e: React.DragEvent<HTMLDivElement>): number => {
+    const buttons = Array.from(
+      e.currentTarget.querySelectorAll<HTMLElement>('[data-scene-id]')
+    )
+    for (let i = 0; i < buttons.length; i++) {
+      const rect = buttons[i].getBoundingClientRect()
+      if (e.clientX < rect.left + rect.width / 2) return i
+    }
+    return scenes.length
+  }
+
+  const handleStripDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+    setInsertIndex(computeInsertIndex(e))
+  }
+
+  const handleStripDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     const sourceId = e.dataTransfer.getData('text/plain')
-    if (!sourceId || sourceId === targetId) return
-    const from = scenes.findIndex((s) => s.id === sourceId)
-    const to = scenes.findIndex((s) => s.id === targetId)
-    if (from === -1 || to === -1) return
+    if (!sourceId || insertIndex === null) return
+    const sourceIndex = scenes.findIndex((s) => s.id === sourceId)
+    if (sourceIndex === -1) return
     const reordered = [...scenes]
-    const [moved] = reordered.splice(from, 1)
-    reordered.splice(to, 0, moved)
+    const [moved] = reordered.splice(sourceIndex, 1)
+    // Adjust for the gap left by removing the source item
+    const adjusted = insertIndex > sourceIndex ? insertIndex - 1 : insertIndex
+    reordered.splice(adjusted, 0, moved)
     onReorder(reordered)
     setDragId(null)
-    setDragOverId(null)
+    setInsertIndex(null)
+  }
+
+  const handleStripDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setInsertIndex(null)
+    }
   }
 
   return (
-    <div className={styles.strip}>
-      {scenes.map((scene) => (
-        <button
-          key={scene.id}
-          onClick={() => onActivate(scene.id)}
-          className={[
-            styles.sceneBtn,
-            scene.id === activeSceneId ? styles.active : '',
-            scene.id === dragId ? styles.dragging : '',
-            scene.id === dragOverId ? styles.dragOver : '',
-          ].filter(Boolean).join(' ')}
-          aria-pressed={scene.id === activeSceneId}
-          draggable
-          onDragStart={(e) => {
-            setDragId(scene.id)
-            e.dataTransfer.effectAllowed = 'move'
-            e.dataTransfer.setData('text/plain', scene.id)
-          }}
-          onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; setDragOverId(scene.id) }}
-          onDrop={(e) => handleDrop(e, scene.id)}
-          onDragEnd={() => { setDragId(null); setDragOverId(null) }}
-        >
-          {scene.name}
-        </button>
+    <div
+      className={styles.strip}
+      onDragOver={handleStripDragOver}
+      onDrop={handleStripDrop}
+      onDragLeave={handleStripDragLeave}
+    >
+      {scenes.map((scene, index) => (
+        <React.Fragment key={scene.id}>
+          {dragId && insertIndex === index && (
+            <div className={styles.insertIndicator} aria-hidden="true" />
+          )}
+          <button
+            onClick={() => onActivate(scene.id)}
+            className={[
+              styles.sceneBtn,
+              scene.id === activeSceneId ? styles.active : '',
+              scene.id === dragId ? styles.dragging : '',
+            ].filter(Boolean).join(' ')}
+            aria-pressed={scene.id === activeSceneId}
+            draggable
+            data-scene-id={scene.id}
+            onDragStart={(e) => {
+              setDragId(scene.id)
+              e.dataTransfer.effectAllowed = 'move'
+              e.dataTransfer.setData('text/plain', scene.id)
+            }}
+            onDragEnd={() => { setDragId(null); setInsertIndex(null) }}
+          >
+            {scene.name}
+          </button>
+        </React.Fragment>
       ))}
+      {dragId && insertIndex === scenes.length && (
+        <div className={styles.insertIndicator} aria-hidden="true" />
+      )}
 
       {editing && activeScene ? (
         <EditDialog
