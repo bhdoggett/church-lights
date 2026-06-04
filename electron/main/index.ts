@@ -5,6 +5,12 @@ import { createCompanionServer } from '../server'
 import { registerIpcHandlers } from '../ipc'
 import { getConfig } from '../store'
 
+// Suppress unhandled serial port errors so Electron's JS error dialog never fires.
+// DmxManager's 'error' handler marks status as disconnected; this is the last-resort catch.
+process.on('uncaughtException', (err) => {
+  console.error('[main] uncaught exception (suppressed from dialog):', err.message)
+})
+
 let mainWindow: BrowserWindow | null = null
 const dmxManager = new DmxManager()
 

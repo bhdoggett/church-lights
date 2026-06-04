@@ -24,10 +24,7 @@ export class DmxManager {
     this.onStatusChange = onStatus
     this.outputPort = outputPort
 
-    if (this.sendInterval) {
-      clearInterval(this.sendInterval)
-      this.sendInterval = null
-    }
+    this.stopSending()
     if (this.port?.isOpen) {
       this.port.close()
     }
@@ -45,8 +42,26 @@ export class DmxManager {
           }
         }
       )
+
+      this.port.on('close', () => {
+        this.stopSending()
+        this.setStatus('disconnected')
+      })
+
+      this.port.on('error', (err) => {
+        console.error('[DMX] serial port error:', err.message)
+        this.stopSending()
+        this.setStatus('disconnected')
+      })
     } catch {
       this.setStatus('error')
+    }
+  }
+
+  private stopSending(): void {
+    if (this.sendInterval) {
+      clearInterval(this.sendInterval)
+      this.sendInterval = null
     }
   }
 
