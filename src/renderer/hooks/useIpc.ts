@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import type { Fixture, SaveSceneArgs, SetChannelArgs, UpdateSceneArgs } from '../shared/types'
+import type { Fixture, SaveSceneArgs, SetChannelArgs, UpdateSceneArgs } from '../../shared/types'
 
 export function useIpc() {
   const getConfig = useCallback(() => window.electronAPI.getConfig(), [])
