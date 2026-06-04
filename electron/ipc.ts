@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid'
 import { makeSceneId } from './slug'
 import { getConfig, saveFixture, deleteFixture, saveScene, deleteScene, setCompanionPort, setDevicePath, replaceConfig } from './store'
 import { exportShow, importShow } from './show'
+import { listSerialPorts } from './ports'
 import type { DmxManager } from './dmx'
 import type { Fixture, SaveSceneArgs, SetChannelArgs } from '../src/shared/types'
 
@@ -67,4 +68,6 @@ export function registerIpcHandlers(dmxManager: DmxManager, onDevicePathChange: 
     replaceConfig(config)
     return config
   })
+
+  ipcMain.handle('device:listPorts', () => listSerialPorts())
 }

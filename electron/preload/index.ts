@@ -20,6 +20,8 @@ const api = {
 
   setDevicePath: (path: string) => ipcRenderer.invoke('config:setDevicePath', { path }),
 
+  listPorts: () => ipcRenderer.invoke('device:listPorts'),
+
   exportShow: () => ipcRenderer.invoke('show:export'),
   importShow: () => ipcRenderer.invoke('show:import'),
 }
