@@ -10,9 +10,10 @@ interface Props {
   getChannel: (universe: 0 | 1, channel: number) => number
   setChannel: (universe: 0 | 1, channel: number, value: number) => void
   onRename: (channel: number, name: string) => void
+  onAllOff: () => void
 }
 
-export function LiveView({ universe, fixtures, getChannel, setChannel, onRename }: Props) {
+export function LiveView({ universe, fixtures, getChannel, setChannel, onRename, onAllOff }: Props) {
   const ipc = useIpc()
 
   const fixtureByChannel = useMemo(() => {
@@ -33,7 +34,8 @@ export function LiveView({ universe, fixtures, getChannel, setChannel, onRename 
       setChannel(universe, ch, 0)
       ipc.setChannel({ universe, channel: ch, value: 0 })
     }
-  }, [universe, ipc, setChannel])
+    onAllOff()
+  }, [universe, ipc, setChannel, onAllOff])
 
   return (
     <div className={styles.view}>

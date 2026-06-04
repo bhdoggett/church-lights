@@ -17,6 +17,7 @@ const defaultProps = {
   getChannel: mockGetChannel,
   setChannel: vi.fn(),
   onRename: vi.fn(),
+  onAllOff: vi.fn(),
 }
 
 describe('LiveView', () => {
@@ -56,6 +57,13 @@ describe('LiveView', () => {
     expect(setChannelProp).toHaveBeenCalledWith(0, 1, 0)
     expect(setChannelProp).toHaveBeenCalledWith(0, 512, 0)
     expect(mockSetChannel).toHaveBeenCalledTimes(512)
+  })
+
+  it('calls onAllOff when All Off clicked', async () => {
+    const onAllOff = vi.fn()
+    render(<LiveView {...defaultProps} onAllOff={onAllOff} />)
+    await userEvent.click(screen.getByRole('button', { name: /all off/i }))
+    expect(onAllOff).toHaveBeenCalledTimes(1)
   })
 
   it('shows fixture label for a labeled channel', () => {

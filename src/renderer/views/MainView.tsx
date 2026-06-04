@@ -171,6 +171,7 @@ export function MainView({ fixtures, scenes, onScenesChange, onFixturesChange }:
           getChannel={getChannel}
           setChannel={setLocal}
           onRename={handleChannelRename}
+          onAllOff={() => setActiveSceneId(null)}
         />
       )}
     </div>
