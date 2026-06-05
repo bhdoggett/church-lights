@@ -32,6 +32,7 @@ const api = {
   exportShow: () => ipcRenderer.invoke('show:export'),
   importShow: () => ipcRenderer.invoke('show:import'),
 
+  resetShow: () => ipcRenderer.invoke('show:reset'),
   listShows: () => ipcRenderer.invoke('show:list'),
   saveNamedShow: (name: string) => ipcRenderer.invoke('show:saveNamed', { name }),
   loadNamedShow: (name: string) => ipcRenderer.invoke('show:loadNamed', { name }),

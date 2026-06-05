@@ -99,6 +99,12 @@ export function registerIpcHandlers(dmxManager: DmxManager, onReconnect: (path: 
     dmxManager.setGroupOverrides(map)
   })
 
+  ipcMain.handle('show:reset', () => {
+    const base = getConfig()
+    replaceConfig({ ...base, fixtures: [], scenes: [], groups: [] })
+    return getConfig()
+  })
+
   ipcMain.handle('show:list', () => listShows())
 
   ipcMain.handle('show:saveNamed', (_e, { name }: { name: string }) => {

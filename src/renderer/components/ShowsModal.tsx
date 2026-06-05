@@ -5,7 +5,8 @@ import styles from './ShowsModal.module.css'
 
 interface Props {
   onLoad: (config: Config, name: string) => void
-  onSaved?: (name: string) => void  // called after a successful save-as
+  onSaved?: (name: string) => void
+  onNew: (config: Config) => void
   onClose: () => void
 }
 
@@ -15,10 +16,11 @@ function formatDate(ms: number): string {
   })
 }
 
-export function ShowsModal({ onLoad, onSaved, onClose }: Props) {
+export function ShowsModal({ onLoad, onSaved, onNew, onClose }: Props) {
   const [shows, setShows] = useState<ShowInfo[]>([])
   const [newName, setNewName] = useState('')
   const [saving, setSaving] = useState(false)
+  const [resetting, setResetting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const refresh = useCallback(async () => {
@@ -31,6 +33,20 @@ export function ShowsModal({ onLoad, onSaved, onClose }: Props) {
   }, [])
 
   useEffect(() => { refresh() }, [refresh])
+
+  const handleNew = async () => {
+    if (!confirm('Clear all fixtures, scenes, and groups?')) return
+    setResetting(true)
+    try {
+      const config = await window.electronAPI.resetShow()
+      onNew(config)
+      onClose()
+    } catch (e) {
+      setError(`Could not reset: ${String(e)}`)
+    } finally {
+      setResetting(false)
+    }
+  }
 
   const handleLoad = async (name: string) => {
     try {
@@ -75,6 +91,13 @@ export function ShowsModal({ onLoad, onSaved, onClose }: Props) {
           {error}
         </p>
       )}
+      <button
+        className={styles.newBtn}
+        onClick={handleNew}
+        disabled={resetting}
+      >
+        {resetting ? 'Clearing…' : '+ New Show'}
+      </button>
       <div className={styles.showList}>
         {shows.length === 0 && (
           <p className={styles.empty}>No saved shows yet.</p>

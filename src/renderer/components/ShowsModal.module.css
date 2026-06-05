@@ -1,3 +1,21 @@
+.newBtn {
+  width: 100%;
+  padding: 7px;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border-default);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: var(--space-3);
+}
+
+.newBtn:hover {
+  border-color: var(--text-secondary);
+  color: var(--text-primary);
+}
+
 .showList {
   display: flex;
   flex-direction: column;

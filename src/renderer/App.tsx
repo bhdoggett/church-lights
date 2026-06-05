@@ -103,6 +103,7 @@ export function App() {
         <ShowsModal
           onLoad={(imported, name) => { setConfig(imported); setCurrentShowName(name) }}
           onSaved={(name) => setCurrentShowName(name)}
+          onNew={(fresh) => { setConfig(fresh); setCurrentShowName(null) }}
           onClose={() => setShowsOpen(false)}
         />
       )}
