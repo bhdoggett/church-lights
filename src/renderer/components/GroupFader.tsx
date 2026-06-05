@@ -1,3 +1,4 @@
+import { Slider } from './Slider'
 import styles from './GroupFader.module.css'
 import type { Group } from '../../shared/types'
 
@@ -45,15 +46,13 @@ export function GroupFader({ group, fader, override, onFaderChange, onOverrideCh
           <span className={`${styles.value}${override !== null ? ` ${styles.overridden}` : ''}`}>
             {displayValue}
           </span>
-          <input
-            type="range"
-            role="slider"
-            className={styles.slider}
+          <Slider
+            value={fader}
             min={0}
             max={100}
-            value={fader}
+            height={60}
             disabled={override !== null}
-            onChange={(e) => onFaderChange(Number(e.target.value))}
+            onChange={onFaderChange}
           />
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { Slider } from './Slider'
 import styles from './RawFader.module.css'
 
 interface Props {
@@ -58,22 +59,17 @@ export function RawFader({ channel, value, label, onChange, onRename, groupColor
           />
         )}
       </div>
-      <input
-        type="range"
-        role="slider"
-        min={0}
-        max={255}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className={styles.slider}
-      />
+      <Slider value={value} onChange={onChange} />
       <button
         className={`${styles.toggleBtn}${value > 0 ? ` ${styles.on}` : ''}`}
         aria-label="toggle"
         aria-pressed={value > 0}
         onClick={() => onChange(value > 0 ? 0 : 255)}
       >
-        <span className={styles.toggleDot} />
+        <span
+          className={styles.toggleDot}
+          style={{ background: `rgba(255,255,255,${value / 255})` }}
+        />
       </button>
       <div
         className={`${styles.nameArea}${onRename ? ` ${styles.renameable}` : ''}`}
