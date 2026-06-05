@@ -26,7 +26,7 @@
 }
 
 .value.active {
-  color: var(--accent);
+  color: var(--text-primary);
 }
 
 .valueRow {
@@ -48,7 +48,7 @@
   direction: rtl;
   height: 120px;
   cursor: pointer;
-  accent-color: var(--accent);
+  accent-color: var(--text-secondary);
 }
 
 .toggleBtn {
@@ -70,7 +70,7 @@
 }
 
 .toggleBtn.on {
-  border-color: var(--accent);
+  border-color: var(--text-secondary);
 }
 
 .toggleDot {
@@ -79,13 +79,12 @@
   border-radius: 50%;
   border: 1.5px solid var(--text-muted);
   background: transparent;
-  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+  transition: background 0.15s, border-color 0.15s;
 }
 
 .toggleBtn.on .toggleDot {
-  background: var(--accent);
-  border-color: var(--accent);
-  box-shadow: 0 0 6px var(--accent-glow);
+  background: var(--text-primary);
+  border-color: var(--text-primary);
 }
 
 .nameArea {
