@@ -196,16 +196,14 @@ export function MainView({ fixtures, scenes, groups, onScenesChange, onFixturesC
             onDelete={handleSceneDelete}
             onReorder={handleSceneReorder}
           />
-          {groups.length > 0 && (
-            <GroupStrip
-              groups={groups}
-              fixtures={fixtures}
-              groupStates={groupStates}
-              onStateChange={handleStateChange}
-              onSaveGroup={handleSaveGroup}
-              onDeleteGroup={handleDeleteGroup}
-            />
-          )}
+          <GroupStrip
+            groups={groups}
+            fixtures={fixtures}
+            groupStates={groupStates}
+            onStateChange={handleStateChange}
+            onSaveGroup={handleSaveGroup}
+            onDeleteGroup={handleDeleteGroup}
+          />
           <div className={styles.fixtures}>
             {sorted.map((fixture) => (
               <FixtureFader
