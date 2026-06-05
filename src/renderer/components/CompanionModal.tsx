@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import type { Scene } from '../../shared/types'
+import { Modal } from './Modal'
 import styles from './CompanionModal.module.css'
 
 interface Props {
@@ -39,13 +40,7 @@ export function CompanionModal({ scenes, port, devicePath, ports, dmxOutputPort,
   }, [refreshPorts])
 
   return (
-    <div className={styles.backdrop}>
-      <div className={styles.panel}>
-        <div className={styles.header}>
-          <h2 className={styles.title}>Settings</h2>
-          <button className={styles.closeBtn} onClick={onClose}>×</button>
-        </div>
-
+    <Modal title="Settings" onClose={onClose} minWidth="520px" maxWidth="640px">
         <section className={styles.section}>
           <h3 className={styles.sectionTitle}>DMX Device</h3>
           {detectedPorts.length > 0 ? (
@@ -139,7 +134,6 @@ export function CompanionModal({ scenes, port, devicePath, ports, dmxOutputPort,
             <li>Save — pressing the button will now fire that scene</li>
           </ol>
         </section>
-      </div>
-    </div>
+    </Modal>
   )
 }

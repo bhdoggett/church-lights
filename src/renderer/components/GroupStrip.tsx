@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { GroupFader } from './GroupFader'
 import { GroupEditor } from './GroupEditor'
+import { Modal } from './Modal'
 import type { Group, Fixture } from '../../shared/types'
 import styles from './GroupStrip.module.css'
 
@@ -32,29 +33,32 @@ export function GroupStrip({ groups, fixtures, groupStates, onStateChange, onSav
   }
 
   return (
-    <div className={styles.strip}>
-      <div className={styles.groupsRow}>
-        {groups.map((group) => {
-          const state = groupStates[group.id] ?? { fader: 100, override: null }
-          return (
-            <GroupFader
-              key={group.id}
-              group={group}
-              fader={state.fader}
-              override={state.override}
-              onFaderChange={(fader) => onStateChange(group.id, { ...state, fader })}
-              onOverrideChange={(override) => onStateChange(group.id, { ...state, override })}
-              onEdit={() => setEditingId(editingId === group.id ? null : group.id)}
-            />
-          )
-        })}
-        {editingId === null && (
+    <>
+      <div className={styles.strip}>
+        <div className={styles.groupsRow}>
+          {groups.map((group) => {
+            const state = groupStates[group.id] ?? { fader: 100, override: null }
+            return (
+              <GroupFader
+                key={group.id}
+                group={group}
+                fader={state.fader}
+                override={state.override}
+                onFaderChange={(fader) => onStateChange(group.id, { ...state, fader })}
+                onOverrideChange={(override) => onStateChange(group.id, { ...state, override })}
+                onEdit={() => setEditingId(editingId === group.id ? null : group.id)}
+              />
+            )
+          })}
           <button className={styles.addBtn} onClick={() => setEditingId('new')}>+ Group</button>
-        )}
+        </div>
       </div>
 
       {editingId !== null && (
-        <div className={styles.editorRow}>
+        <Modal
+          title={editingGroup ? `Edit: ${editingGroup.name}` : 'New Group'}
+          onClose={() => setEditingId(null)}
+        >
           <GroupEditor
             groups={groups}
             fixtures={fixtures}
@@ -63,8 +67,8 @@ export function GroupStrip({ groups, fixtures, groupStates, onStateChange, onSav
             onDelete={handleDelete}
             onCancel={() => setEditingId(null)}
           />
-        </div>
+        </Modal>
       )}
-    </div>
+    </>
   )
 }
