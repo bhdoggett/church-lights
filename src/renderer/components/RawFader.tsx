@@ -7,9 +7,10 @@ interface Props {
   label?: string
   onChange: (value: number) => void
   onRename?: (name: string) => void
+  groupColor?: string
 }
 
-export function RawFader({ channel, value, label, onChange, onRename }: Props) {
+export function RawFader({ channel, value, label, onChange, onRename, groupColor }: Props) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
@@ -36,9 +37,19 @@ export function RawFader({ channel, value, label, onChange, onRename }: Props) {
 
   return (
     <div className={styles.fader}>
-      <span className={`${styles.value}${value > 0 ? ` ${styles.active}` : ''}`}>
-        {value}
-      </span>
+      <div className={styles.valueRow}>
+        <span className={`${styles.value}${value > 0 ? ` ${styles.active}` : ''}`}>
+          {value}
+        </span>
+        {groupColor && (
+          <span
+            className={styles.groupDot}
+            style={{ background: groupColor }}
+            data-testid="group-dot"
+            title="Group active"
+          />
+        )}
+      </div>
       <input
         type="range"
         role="slider"

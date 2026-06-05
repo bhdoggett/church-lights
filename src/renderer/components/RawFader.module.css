@@ -19,6 +19,20 @@
   color: var(--accent);
 }
 
+.valueRow {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  min-height: 16px;
+}
+
+.groupDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
 .slider {
   writing-mode: vertical-lr;
   direction: rtl;

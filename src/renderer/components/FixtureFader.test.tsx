@@ -24,4 +24,14 @@ describe('FixtureFader', () => {
     fireEvent.change(slider, { target: { value: '128' } })
     expect(onChange).toHaveBeenCalledWith(128)
   })
+
+  it('shows group suppression dot when groupColor provided', () => {
+    render(<FixtureFader channel={5} name="Spot" value={200} onChange={vi.fn()} groupColor="#ef4444" />)
+    expect(screen.getByTestId('group-dot')).toBeInTheDocument()
+  })
+
+  it('does not show group dot when groupColor not provided', () => {
+    render(<FixtureFader channel={5} name="Spot" value={200} onChange={vi.fn()} />)
+    expect(screen.queryByTestId('group-dot')).not.toBeInTheDocument()
+  })
 })
