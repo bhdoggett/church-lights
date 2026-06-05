@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import type { Fixture, SaveSceneArgs, SetChannelArgs, DmxStatus, UpdateSceneArgs } from '../../src/shared/types'
+import type { Fixture, SaveSceneArgs, SetChannelArgs, DmxStatus, UpdateSceneArgs, Group } from '../../src/shared/types'
 
 const api = {
   getConfig: () => ipcRenderer.invoke('config:get'),
@@ -24,6 +24,10 @@ const api = {
   setDmxOutputPort: (port: 0 | 1 | 2) => ipcRenderer.invoke('config:setDmxOutputPort', { port }),
 
   listPorts: () => ipcRenderer.invoke('device:listPorts'),
+
+  saveGroup: (group: Group) => ipcRenderer.invoke('group:save', group),
+  deleteGroup: (id: string) => ipcRenderer.invoke('group:delete', { id }),
+  setGroupMultipliers: (map: Record<string, number>) => ipcRenderer.invoke('group:setMultipliers', map),
 
   exportShow: () => ipcRenderer.invoke('show:export'),
   importShow: () => ipcRenderer.invoke('show:import'),

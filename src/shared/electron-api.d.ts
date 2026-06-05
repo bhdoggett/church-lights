@@ -1,4 +1,4 @@
-import type { Fixture, Config, Scene, SaveSceneArgs, SetChannelArgs, DmxStatus, UpdateSceneArgs } from './types'
+import type { Fixture, Config, Scene, SaveSceneArgs, SetChannelArgs, DmxStatus, UpdateSceneArgs, Group } from './types'
 
 declare global {
   interface Window {
@@ -17,6 +17,9 @@ declare global {
       setDevicePath: (path: string) => Promise<void>
       setDmxOutputPort: (port: 0 | 1 | 2) => Promise<void>
       listPorts: () => Promise<string[]>
+      saveGroup: (group: Group) => Promise<Group[]>
+      deleteGroup: (id: string) => Promise<void>
+      setGroupMultipliers: (map: Record<string, number>) => Promise<void>
       exportShow: () => Promise<boolean>
       importShow: () => Promise<Config | null>
     }

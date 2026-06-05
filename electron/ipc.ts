@@ -1,11 +1,11 @@
 import { ipcMain } from 'electron'
 import { v4 as uuid } from 'uuid'
 import { makeSceneId } from './slug'
-import { getConfig, saveFixture, deleteFixture, saveScene, deleteScene, setCompanionPort, setDevicePath, setDmxOutputPort, replaceConfig, updateScene, reorderScenes } from './store'
+import { getConfig, saveFixture, deleteFixture, saveScene, deleteScene, setCompanionPort, setDevicePath, setDmxOutputPort, replaceConfig, updateScene, reorderScenes, saveGroup, deleteGroup } from './store'
 import { exportShow, importShow } from './show'
 import { listSerialPorts } from './ports'
 import type { DmxManager } from './dmx'
-import type { Fixture, SaveSceneArgs, SetChannelArgs, UpdateSceneArgs } from '../src/shared/types'
+import type { Fixture, SaveSceneArgs, SetChannelArgs, UpdateSceneArgs, Group } from '../src/shared/types'
 
 export function registerIpcHandlers(dmxManager: DmxManager, onReconnect: (path: string) => void): void {
   ipcMain.handle('config:get', () => getConfig())
@@ -84,4 +84,17 @@ export function registerIpcHandlers(dmxManager: DmxManager, onReconnect: (path: 
   })
 
   ipcMain.handle('device:listPorts', () => listSerialPorts())
+
+  ipcMain.handle('group:save', (_e, group: Group) => {
+    saveGroup(group)
+    return getConfig().groups
+  })
+
+  ipcMain.handle('group:delete', (_e, { id }: { id: string }) => {
+    deleteGroup(id)
+  })
+
+  ipcMain.handle('group:setMultipliers', (_e, map: Record<string, number>) => {
+    dmxManager.setGroupMultipliers(map)
+  })
 }
