@@ -9,7 +9,7 @@ import { useDmxState } from '../hooks/useDmxState'
 import type { Fixture, Scene, Group, GroupChannelOverride } from '../../shared/types'
 import styles from './MainView.module.css'
 
-type Tab = 'custom' | 'live'
+type Tab = 'custom' | 'full'
 type GroupState = { fader: number; override: 'full' | 'mute' | null }
 
 interface Props {
@@ -168,10 +168,10 @@ export function MainView({ fixtures, scenes, groups, onScenesChange, onFixturesC
     <div className={styles.view}>
       <div className={styles.tabBar}>
         <button
-          className={`${styles.tab}${tab === 'live' ? ` ${styles.active}` : ''}`}
-          onClick={() => setTab('live')}
+          className={`${styles.tab}${tab === 'full' ? ` ${styles.active}` : ''}`}
+          onClick={() => setTab('full')}
         >
-          Live
+          Full
         </button>
         <button
           className={`${styles.tab}${tab === 'custom' ? ` ${styles.active}` : ''}`}
@@ -179,7 +179,7 @@ export function MainView({ fixtures, scenes, groups, onScenesChange, onFixturesC
         >
           Custom
         </button>
-        {tab === 'live' && (
+        {tab === 'full' && (
           <div className={styles.universeToggle}>
             <button
               className={`${styles.uBtn}${universe === 0 ? ` ${styles.active}` : ''}`}
@@ -245,15 +245,26 @@ export function MainView({ fixtures, scenes, groups, onScenesChange, onFixturesC
         />
       )}
 
-      {tab === 'live' && (
-        <LiveView
-          universe={universe}
-          fixtures={fixtures}
-          getChannel={getChannel}
-          setChannel={setLocal}
-          onRename={handleChannelRename}
-          onAllOff={() => setActiveSceneId(null)}
-        />
+      {tab === 'full' && (
+        <>
+          <ScenesStrip
+            scenes={scenes}
+            activeSceneId={activeSceneId}
+            onActivate={handleActivate}
+            onSave={handleSave}
+            onUpdate={handleSceneUpdate}
+            onDelete={handleSceneDelete}
+            onReorder={handleSceneReorder}
+          />
+          <LiveView
+            universe={universe}
+            fixtures={fixtures}
+            getChannel={getChannel}
+            setChannel={setLocal}
+            onRename={handleChannelRename}
+            onAllOff={() => setActiveSceneId(null)}
+          />
+        </>
       )}
     </div>
   )
