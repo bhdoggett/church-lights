@@ -82,7 +82,7 @@ export function App() {
           onFixturesChange={handleFixturesChange}
           onGroupsChange={handleGroupsChange}
           currentShowName={currentShowName}
-          onSave={currentShowName ? handleSaveCurrent : undefined}
+          onSave={currentShowName ? handleSaveCurrent : () => setShowsOpen(true)}
         />
       </div>
 

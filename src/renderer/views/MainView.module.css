@@ -56,6 +56,10 @@
   color: var(--accent);
 }
 
+.saveBtnDim {
+  opacity: 0.4;
+}
+
 .universeToggle {
   display: flex;
   gap: 4px;
