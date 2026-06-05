@@ -19,16 +19,18 @@ npm run build:mac
 
 Open `dist-electron/Church Lights-0.1.0-arm64.dmg` (Apple Silicon) or `Church Lights-0.1.0.dmg` (Intel) from Finder. Drag **Church Lights** to Applications.
 
-### Option B — GitHub Releases
+### Option B — Download pre-built .dmg
 
-Pre-built `.dmg` files will be attached to [GitHub Releases](https://github.com/bhdoggett/church-lights/releases) when available. Download the appropriate file for your Mac:
+**[→ Download from GitHub Releases](https://github.com/bhdoggett/church-lights/releases)**
+
+Pick the right file for your Mac:
 
 | File | For |
 |---|---|
 | `Church Lights-x.x.x-arm64.dmg` | Apple Silicon (M1/M2/M3/M4) |
 | `Church Lights-x.x.x.dmg` | Intel Mac |
 
-Double-click the `.dmg`, drag the app to Applications, then open it. macOS may ask you to allow it in **System Settings → Privacy & Security** on first launch.
+Double-click the `.dmg`, drag Church Lights to Applications, then open it. macOS may prompt you in **System Settings → Privacy & Security** on first launch — click **Open Anyway**.
 
 ---
 
