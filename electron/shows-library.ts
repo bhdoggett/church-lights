@@ -1,30 +1,34 @@
 import { join } from 'path'
 import { readdirSync, writeFileSync, readFileSync, unlinkSync, mkdirSync, existsSync, statSync } from 'fs'
-import { homedir } from 'os'
+import { app } from 'electron'
 import type { Config } from '../src/shared/types'
 
-const SHOWS_DIR = join(homedir(), 'Documents', 'Church Lights')
+function getShowsDir(): string {
+  return join(app.getPath('documents'), 'Church Lights')
+}
 
 export interface ShowInfo {
   name: string
   modifiedAt: number  // ms timestamp
 }
 
-function ensureDir(): void {
-  if (!existsSync(SHOWS_DIR)) mkdirSync(SHOWS_DIR, { recursive: true })
+function ensureDir(): string {
+  const dir = getShowsDir()
+  if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
+  return dir
 }
 
 function showPath(name: string): string {
-  return join(SHOWS_DIR, `${name}.json`)
+  return join(getShowsDir(), `${name}.json`)
 }
 
 export function listShows(): ShowInfo[] {
-  ensureDir()
-  return readdirSync(SHOWS_DIR)
+  const dir = ensureDir()
+  return readdirSync(dir)
     .filter((f) => f.endsWith('.json'))
     .map((f) => ({
       name: f.replace(/\.json$/, ''),
-      modifiedAt: statSync(join(SHOWS_DIR, f)).mtimeMs,
+      modifiedAt: statSync(join(dir, f)).mtimeMs,
     }))
     .sort((a, b) => b.modifiedAt - a.modifiedAt) // newest first
 }
@@ -37,9 +41,9 @@ export function saveNamedShow(name: string, config: Config): void {
 export function loadNamedShow(name: string): Config {
   const raw = JSON.parse(readFileSync(showPath(name), 'utf-8'))
   if (!Array.isArray(raw.fixtures) || !Array.isArray(raw.scenes)) {
-    throw new Error('Invalid show file')
+    throw new Error('Invalid show file format')
   }
-  return raw as Config
+  return { groups: [], ...raw } as Config
 }
 
 export function deleteNamedShow(name: string): void {

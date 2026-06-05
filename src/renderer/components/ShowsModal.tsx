@@ -18,37 +18,61 @@ export function ShowsModal({ onLoad, onClose }: Props) {
   const [shows, setShows] = useState<ShowInfo[]>([])
   const [newName, setNewName] = useState('')
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const refresh = useCallback(async () => {
-    const list = await window.electronAPI.listShows()
-    setShows(list)
+    try {
+      const list = await window.electronAPI.listShows()
+      setShows(list)
+    } catch (e) {
+      setError(String(e))
+    }
   }, [])
 
   useEffect(() => { refresh() }, [refresh])
 
   const handleLoad = async (name: string) => {
-    const config = await window.electronAPI.loadNamedShow(name)
-    onLoad(config)
-    onClose()
+    try {
+      const config = await window.electronAPI.loadNamedShow(name)
+      onLoad(config)
+      onClose()
+    } catch (e) {
+      setError(`Could not load "${name}": ${String(e)}`)
+    }
   }
 
   const handleDelete = async (name: string) => {
-    const updated = await window.electronAPI.deleteNamedShow(name)
-    setShows(updated)
+    try {
+      const updated = await window.electronAPI.deleteNamedShow(name)
+      setShows(updated)
+    } catch (e) {
+      setError(`Could not delete "${name}": ${String(e)}`)
+    }
   }
 
   const handleSave = async () => {
     const name = newName.trim()
     if (!name) return
+    setError(null)
     setSaving(true)
-    const updated = await window.electronAPI.saveNamedShow(name)
-    setShows(updated)
-    setNewName('')
-    setSaving(false)
+    try {
+      const updated = await window.electronAPI.saveNamedShow(name)
+      setShows(updated)
+      setNewName('')
+    } catch (e) {
+      setError(`Could not save show: ${String(e)}`)
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
     <Modal title="Shows" onClose={onClose} minWidth="420px" maxWidth="520px">
+      {error && (
+        <p style={{ color: 'var(--status-error)', fontSize: 12, marginBottom: 'var(--space-3)' }}>
+          {error}
+        </p>
+      )}
       <div className={styles.showList}>
         {shows.length === 0 && (
           <p className={styles.empty}>No saved shows yet.</p>
