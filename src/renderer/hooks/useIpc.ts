@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import type { Fixture, SaveSceneArgs, SetChannelArgs, UpdateSceneArgs } from '../../shared/types'
+import type { Fixture, SaveSceneArgs, SetChannelArgs, UpdateSceneArgs, Group } from '../../shared/types'
 
 export function useIpc() {
   const getConfig = useCallback(() => window.electronAPI.getConfig(), [])
@@ -12,6 +12,13 @@ export function useIpc() {
   const updateFixture = useCallback((f: Fixture) => window.electronAPI.updateFixture(f), [])
   const deleteFixture = useCallback((id: string) => window.electronAPI.deleteFixture(id), [])
   const setPort = useCallback((port: number) => window.electronAPI.setPort(port), [])
+  const saveGroup = useCallback((g: Group) => window.electronAPI.saveGroup(g), [])
+  const deleteGroup = useCallback((id: string) => window.electronAPI.deleteGroup(id), [])
+  const setGroupMultipliers = useCallback((map: Record<string, number>) => window.electronAPI.setGroupMultipliers(map), [])
 
-  return { getConfig, setChannel, saveScene, loadScene, deleteScene, updateScene, reorderScenes, updateFixture, deleteFixture, setPort }
+  return {
+    getConfig, setChannel, saveScene, loadScene, deleteScene, updateScene,
+    reorderScenes, updateFixture, deleteFixture, setPort,
+    saveGroup, deleteGroup, setGroupMultipliers,
+  }
 }
