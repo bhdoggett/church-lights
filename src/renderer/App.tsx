@@ -62,16 +62,6 @@ export function App() {
       <header className={styles.header}>
         <span className={styles.appName}>Church Lights</span>
         <div className={styles.headerRight}>
-          {currentShowName && (
-            <button
-              className={styles.showBtn}
-              onClick={handleSaveCurrent}
-              disabled={saving}
-              title={`Save to "${currentShowName}"`}
-            >
-              {saving ? 'Saving…' : `Save`}
-            </button>
-          )}
           <button className={styles.showBtn} onClick={() => setShowsOpen(true)} title="Shows">
             {currentShowName ?? 'Shows'}
           </button>
@@ -91,6 +81,8 @@ export function App() {
           onScenesChange={handleScenesChange}
           onFixturesChange={handleFixturesChange}
           onGroupsChange={handleGroupsChange}
+          currentShowName={currentShowName}
+          onSave={currentShowName ? handleSaveCurrent : undefined}
         />
       </div>
 

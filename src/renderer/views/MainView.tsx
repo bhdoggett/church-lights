@@ -19,9 +19,11 @@ interface Props {
   onScenesChange: (scenes: Scene[]) => void
   onFixturesChange: (fixtures: Fixture[]) => void
   onGroupsChange: (groups: Group[]) => void
+  currentShowName?: string | null
+  onSave?: () => void
 }
 
-export function MainView({ fixtures, scenes, groups, onScenesChange, onFixturesChange, onGroupsChange }: Props) {
+export function MainView({ fixtures, scenes, groups, onScenesChange, onFixturesChange, onGroupsChange, currentShowName, onSave }: Props) {
   const ipc = useIpc()
   const { getChannel, setChannel: setLocal, applyScene } = useDmxState()
   const [activeSceneId, setActiveSceneId] = useState<string | null>(null)
@@ -190,6 +192,19 @@ export function MainView({ fixtures, scenes, groups, onScenesChange, onFixturesC
               onClick={() => setUniverse(1)}
             >U2</button>
           </div>
+        )}
+        {currentShowName && onSave && (
+          <button
+            className={styles.saveBtn}
+            onClick={onSave}
+            title={`Save to "${currentShowName}"`}
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="1" y="1" width="12" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.2"/>
+              <rect x="3.5" y="1" width="5" height="4.5" rx="0.5" fill="currentColor"/>
+              <rect x="3" y="7" width="8" height="5" rx="0.5" fill="currentColor"/>
+            </svg>
+          </button>
         )}
       </div>
 

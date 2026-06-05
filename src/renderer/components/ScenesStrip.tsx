@@ -136,6 +136,7 @@ export function ScenesStrip({ scenes, activeSceneId, onActivate, onSave, onUpdat
         onDrop={handleStripDrop}
         onDragLeave={handleStripDragLeave}
       >
+        <span className={styles.scenesLabel}>Scenes:</span>
         {scenes.map((scene, index) => (
           <React.Fragment key={scene.id}>
             {dragId && insertIndex === index && (
