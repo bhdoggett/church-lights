@@ -11,8 +11,8 @@ vi.mock('electron-store', () => {
   }
 })
 
-import { getConfig, saveFixture, deleteFixture, saveScene, deleteScene, setCompanionPort, updateScene, reorderScenes } from './store'
-import type { Fixture, Scene } from '../src/shared/types'
+import { getConfig, saveFixture, deleteFixture, saveScene, deleteScene, setCompanionPort, updateScene, reorderScenes, saveGroup, deleteGroup } from './store'
+import type { Fixture, Scene, Group } from '../src/shared/types'
 
 const fixture: Fixture = {
   id: 'f1', name: 'Chandelier L', channel: 1, universe: 0, type: 'dimmer',
@@ -117,5 +117,47 @@ describe('reorderScenes', () => {
     expect(inst().set).toHaveBeenCalledWith('scenes', [
       { id: 's1', name: 'A', fadeDuration: 0, values: {} },
     ])
+  })
+})
+
+describe('saveGroup', () => {
+  it('adds a new group', () => {
+    const group: Group = { id: 'g1', name: 'Front Wash', color: '#6366f1', fixtureIds: ['f1'] }
+    inst().get.mockImplementation((key: string, def: unknown) =>
+      key === 'groups' ? [] : def
+    )
+    inst().set.mockClear()
+    saveGroup(group)
+    expect(inst().set).toHaveBeenCalledWith('groups', [group])
+  })
+
+  it('removes fixture from other groups when saving a group that claims it', () => {
+    const existing: Group[] = [
+      { id: 'g1', name: 'A', color: '#fff', fixtureIds: ['f1', 'f2'] },
+    ]
+    const newGroup: Group = { id: 'g2', name: 'B', color: '#000', fixtureIds: ['f1'] }
+    inst().get.mockImplementation((key: string, def: unknown) =>
+      key === 'groups' ? existing : def
+    )
+    inst().set.mockClear()
+    saveGroup(newGroup)
+    const [[, saved]] = inst().set.mock.calls
+    expect(saved[0].fixtureIds).toEqual(['f2'])
+    expect(saved[1].fixtureIds).toEqual(['f1'])
+  })
+})
+
+describe('deleteGroup', () => {
+  it('removes group by id', () => {
+    const groups: Group[] = [
+      { id: 'g1', name: 'A', color: '#fff', fixtureIds: [] },
+      { id: 'g2', name: 'B', color: '#000', fixtureIds: [] },
+    ]
+    inst().get.mockImplementation((key: string, def: unknown) =>
+      key === 'groups' ? groups : def
+    )
+    inst().set.mockClear()
+    deleteGroup('g1')
+    expect(inst().set).toHaveBeenCalledWith('groups', [groups[1]])
   })
 })

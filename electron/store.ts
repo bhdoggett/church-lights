@@ -1,10 +1,11 @@
 import Store from 'electron-store'
-import type { Config, Fixture, Scene } from '../src/shared/types'
+import type { Config, Fixture, Scene, Group } from '../src/shared/types'
 
 const store = new Store<Config>({
   defaults: {
     fixtures: [],
     scenes: [],
+    groups: [],
     companionPort: 5551,
     devicePath: '',
     dmxOutputPort: 0,
@@ -20,6 +21,7 @@ export function getConfig(): Config {
   return {
     fixtures: store.get('fixtures', []),
     scenes: store.get('scenes', []),
+    groups: store.get('groups', []),
     companionPort: store.get('companionPort', 5551),
     devicePath: store.get('devicePath', ''),
     dmxOutputPort: store.get('dmxOutputPort', 0),
@@ -58,6 +60,22 @@ export function deleteScene(id: string): void {
   store.set('scenes', scenes)
 }
 
+export function saveGroup(group: Group): void {
+  // Enforce one fixture per group: remove this group's fixtures from any other group
+  let groups = store.get('groups', [])
+  groups = groups.map((g) =>
+    g.id === group.id
+      ? group
+      : { ...g, fixtureIds: g.fixtureIds.filter((fid) => !group.fixtureIds.includes(fid)) }
+  )
+  if (!groups.find((g) => g.id === group.id)) groups.push(group)
+  store.set('groups', groups)
+}
+
+export function deleteGroup(id: string): void {
+  store.set('groups', store.get('groups', []).filter((g) => g.id !== id))
+}
+
 export function updateScene(id: string, name: string, fadeDuration: number): void {
   const scenes = store.get('scenes', [])
   const idx = scenes.findIndex((s) => s.id === id)
@@ -87,6 +105,7 @@ export function setDmxOutputPort(port: 0 | 1 | 2): void {
 export function replaceConfig(config: Config): void {
   store.set('fixtures', config.fixtures)
   store.set('scenes', config.scenes)
+  store.set('groups', config.groups ?? [])
   store.set('companionPort', config.companionPort)
   store.set('devicePath', config.devicePath ?? '')
   store.set('dmxOutputPort', config.dmxOutputPort ?? 0)

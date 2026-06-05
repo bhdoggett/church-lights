@@ -18,6 +18,7 @@ export interface Scene {
 export interface Config {
   fixtures: Fixture[]
   scenes: Scene[]
+  groups: Group[]
   companionPort: number // default 5551
   devicePath: string   // e.g. /dev/tty.usbserial-XXXXX, empty = no connection
   dmxOutputPort: 0 | 1 | 2 // MK2 output port (matches QLC+ output 1/2/3)
@@ -44,3 +45,16 @@ export interface UpdateSceneArgs {
   name: string
   fadeDuration: number
 }
+
+export interface Group {
+  id: string
+  name: string
+  color: string        // hex e.g. "#6366f1"
+  fixtureIds: string[] // each fixture belongs to at most one group
+}
+
+export const GROUP_COLORS = [
+  '#6366f1', '#22c55e', '#ef4444', '#f59e0b',
+  '#3b82f6', '#ec4899', '#8b5cf6', '#14b8a6',
+  '#f97316', '#6b7280',
+] as const
