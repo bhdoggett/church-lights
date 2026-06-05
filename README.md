@@ -21,14 +21,14 @@ Open `dist-electron/Church Lights-0.1.0-arm64.dmg` (Apple Silicon) or `Church Li
 
 ### Option B — Download pre-built .dmg
 
-**[→ Download from GitHub Releases](https://github.com/bhdoggett/church-lights/releases)**
+**[→ All releases](https://github.com/bhdoggett/church-lights/releases)**
 
-Pick the right file for your Mac:
+Download the right file for your Mac:
 
-| File | For |
+| Download | For |
 |---|---|
-| `Church Lights-x.x.x-arm64.dmg` | Apple Silicon (M1/M2/M3/M4) |
-| `Church Lights-x.x.x.dmg` | Intel Mac |
+| [Church Lights-0.1.0-arm64.dmg](https://github.com/bhdoggett/church-lights/releases/download/v0.1.0/Church.Lights-0.1.0-arm64.dmg) | Apple Silicon (M1/M2/M3/M4) |
+| [Church Lights-0.1.0.dmg](https://github.com/bhdoggett/church-lights/releases/download/v0.1.0/Church.Lights-0.1.0.dmg) | Intel Mac |
 
 Double-click the `.dmg`, drag Church Lights to Applications, then open it. macOS may prompt you in **System Settings → Privacy & Security** on first launch — click **Open Anyway**.
 
