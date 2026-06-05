@@ -1,31 +1,14 @@
 import { app, BrowserWindow } from 'electron'
 import { join } from 'path'
-import { existsSync, renameSync } from 'fs'
 import { DmxManager } from '../dmx'
 import { createCompanionServer } from '../server'
 import { registerIpcHandlers } from '../ipc'
 import { getConfig } from '../store'
-import { migrateShowsFolder } from '../shows-library'
 
 // Suppress unhandled serial port errors so Electron's JS error dialog never fires.
 process.on('uncaughtException', (err) => {
   console.error('[main] uncaught exception (suppressed from dialog):', err.message)
 })
-
-// Migrate electron-store userData from "Church Lights" → "Lightz"
-// Must run before app is ready so the store picks up the new path
-;(() => {
-  const oldPath = join(app.getPath('appData'), 'Church Lights')
-  const newPath = join(app.getPath('appData'), 'Lightz')
-  if (existsSync(oldPath) && !existsSync(newPath)) {
-    try {
-      renameSync(oldPath, newPath)
-      console.log('[main] migrated userData Church Lights → Lightz')
-    } catch (e) {
-      console.error('[main] userData migration failed:', e)
-    }
-  }
-})()
 
 let mainWindow: BrowserWindow | null = null
 const dmxManager = new DmxManager()
@@ -61,7 +44,6 @@ function tryConnect(devicePath: string): void {
 }
 
 app.whenReady().then(() => {
-  migrateShowsFolder()
   registerIpcHandlers(dmxManager, (newPath) => {
     tryConnect(newPath)
   })

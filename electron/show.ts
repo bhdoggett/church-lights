@@ -2,7 +2,7 @@ import { dialog } from 'electron'
 import { readFileSync, writeFileSync } from 'fs'
 import type { Config } from '../src/shared/types'
 
-const FILTERS = [{ name: 'Church Lights Show', extensions: ['json'] }]
+const FILTERS = [{ name: 'Lightz Show', extensions: ['json'] }]
 
 function parseShowFile(path: string): Config {
   const raw = JSON.parse(readFileSync(path, 'utf-8'))

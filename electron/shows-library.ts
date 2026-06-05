@@ -1,32 +1,15 @@
 import { join } from 'path'
-import { readdirSync, writeFileSync, readFileSync, unlinkSync, mkdirSync, existsSync, statSync, renameSync } from 'fs'
+import { readdirSync, writeFileSync, readFileSync, unlinkSync, mkdirSync, existsSync, statSync } from 'fs'
 import { app } from 'electron'
 import type { Config } from '../src/shared/types'
 
-const OLD_FOLDER_NAME = 'Church Lights'
-const NEW_FOLDER_NAME = 'Lightz'
-
 function getShowsDir(): string {
-  return join(app.getPath('documents'), NEW_FOLDER_NAME)
+  return join(app.getPath('documents'), 'Lightz')
 }
 
 export interface ShowInfo {
   name: string
   modifiedAt: number  // ms timestamp
-}
-
-// Migrate shows folder from "Church Lights" → "Lightz" on first run after rebrand
-export function migrateShowsFolder(): void {
-  const oldDir = join(app.getPath('documents'), OLD_FOLDER_NAME)
-  const newDir = getShowsDir()
-  if (existsSync(oldDir) && !existsSync(newDir)) {
-    try {
-      renameSync(oldDir, newDir)
-      console.log(`[shows] migrated ${OLD_FOLDER_NAME} → ${NEW_FOLDER_NAME}`)
-    } catch (e) {
-      console.error('[shows] migration failed:', e)
-    }
-  }
 }
 
 function ensureDir(): string {
