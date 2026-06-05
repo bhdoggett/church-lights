@@ -1,0 +1,128 @@
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-overlay);
+  border-radius: var(--radius-lg);
+  max-width: 480px;
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.nameInput {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: var(--bg-raised);
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.nameInput:focus {
+  outline: 1px solid var(--accent);
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.colorPalette {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.colorSwatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.colorSwatch.selected {
+  border-color: #fff;
+  transform: scale(1.15);
+}
+
+.fixtureList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.fixtureItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.fixtureItem.taken {
+  color: var(--text-muted);
+  cursor: default;
+}
+
+.takenLabel {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.saveBtn {
+  padding: 5px 14px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.saveBtn:hover {
+  background: var(--accent-hover);
+}
+
+.deleteBtn {
+  padding: 5px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-error);
+  background: transparent;
+  color: var(--status-error);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.cancelBtn {
+  padding: 5px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: transparent;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
