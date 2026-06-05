@@ -152,7 +152,6 @@
 
 .dragging {
   opacity: 0.4;
-  cursor: grabbing;
 }
 
 .insertIndicator {
