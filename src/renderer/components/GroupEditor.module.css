@@ -33,6 +33,7 @@
   color: var(--text-secondary);
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  margin-bottom: var(--space-1);
 }
 
 .colorPalette {
