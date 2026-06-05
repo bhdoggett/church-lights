@@ -46,6 +46,12 @@ export interface UpdateSceneArgs {
   fadeDuration: number
 }
 
+// Per-channel group override sent to DmxManager
+export type GroupChannelOverride =
+  | { kind: 'full' }                    // output = 255
+  | { kind: 'mute' }                    // output = 0
+  | { kind: 'percent'; multiplier: number } // output = stored × multiplier
+
 export interface Group {
   id: string
   name: string

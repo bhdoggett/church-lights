@@ -7,10 +7,10 @@ interface Props {
   onChange: (value: number) => void
   onRename?: (name: string) => void
   groupColor?: string
-  groupMuted?: boolean
+  groupOverride?: 'full' | 'mute' | null
 }
 
-export function FixtureFader({ channel, name, value, onChange, onRename, groupColor, groupMuted }: Props) {
+export function FixtureFader({ channel, name, value, onChange, onRename, groupColor, groupOverride }: Props) {
   return (
     <RawFader
       channel={channel}
@@ -19,7 +19,7 @@ export function FixtureFader({ channel, name, value, onChange, onRename, groupCo
       onChange={onChange}
       onRename={onRename}
       groupColor={groupColor}
-      groupMuted={groupMuted}
+      groupOverride={groupOverride}
     />
   )
 }

@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import type { Fixture, SaveSceneArgs, SetChannelArgs, DmxStatus, UpdateSceneArgs, Group } from '../../src/shared/types'
+import type { Fixture, SaveSceneArgs, SetChannelArgs, DmxStatus, UpdateSceneArgs, Group, GroupChannelOverride } from '../../src/shared/types'
 
 const api = {
   getConfig: () => ipcRenderer.invoke('config:get'),
@@ -27,7 +27,7 @@ const api = {
 
   saveGroup: (group: Group) => ipcRenderer.invoke('group:save', group),
   deleteGroup: (id: string) => ipcRenderer.invoke('group:delete', { id }),
-  setGroupMultipliers: (map: Record<string, number>) => ipcRenderer.invoke('group:setMultipliers', map),
+  setGroupOverrides: (map: Record<string, GroupChannelOverride>) => ipcRenderer.invoke('group:setOverrides', map),
 
   exportShow: () => ipcRenderer.invoke('show:export'),
   importShow: () => ipcRenderer.invoke('show:import'),

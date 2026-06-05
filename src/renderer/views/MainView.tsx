@@ -5,7 +5,7 @@ import { GroupStrip } from '../components/GroupStrip'
 import { LiveView } from './LiveView'
 import { useIpc } from '../hooks/useIpc'
 import { useDmxState } from '../hooks/useDmxState'
-import type { Fixture, Scene, Group } from '../../shared/types'
+import type { Fixture, Scene, Group, GroupChannelOverride } from '../../shared/types'
 import styles from './MainView.module.css'
 
 type Tab = 'scenes' | 'live'
@@ -39,26 +39,27 @@ export function MainView({ fixtures, scenes, groups, onScenesChange, onFixturesC
     })
   }, [groups])
 
-  // Build and push multiplier map whenever groups or group states change
-  const multiplierMap = useMemo(() => {
-    const map: Record<string, number> = {}
+  // Build and push override map whenever groups or group states change
+  const overrideMap = useMemo(() => {
+    const map: Record<string, GroupChannelOverride> = {}
     for (const group of groups) {
       const state = groupStates[group.id] ?? { fader: 100, override: null }
-      const m = state.override === 'full' ? 1.0
-              : state.override === 'mute' ? 0.0
-              : state.fader / 100
+      const channelOverride: GroupChannelOverride =
+        state.override === 'full' ? { kind: 'full' } :
+        state.override === 'mute' ? { kind: 'mute' } :
+        { kind: 'percent', multiplier: state.fader / 100 }
       for (const fixtureId of group.fixtureIds) {
         const fixture = fixtures.find((f) => f.id === fixtureId)
         if (!fixture) continue
-        map[`${fixture.universe}-${fixture.channel}`] = m
+        map[`${fixture.universe}-${fixture.channel}`] = channelOverride
       }
     }
     return map
   }, [groups, groupStates, fixtures])
 
   useEffect(() => {
-    ipc.setGroupMultipliers(multiplierMap)
-  }, [multiplierMap, ipc])
+    ipc.setGroupOverrides(overrideMap)
+  }, [overrideMap, ipc])
 
   const handleStateChange = useCallback((groupId: string, state: GroupState) => {
     setGroupStates((prev) => ({ ...prev, [groupId]: state }))
@@ -147,15 +148,10 @@ export function MainView({ fixtures, scenes, groups, onScenesChange, onFixturesC
     return groups.find((g) => g.fixtureIds.includes(fixtureId))?.color
   }, [groups])
 
-  const isFixtureMuted = useCallback((fixtureId: string): boolean => {
+  const getFixtureOverride = useCallback((fixtureId: string): 'full' | 'mute' | null => {
     const group = groups.find((g) => g.fixtureIds.includes(fixtureId))
-    if (!group) return false
-    const state = groupStates[group.id]
-    if (!state) return false
-    const m = state.override === 'full' ? 1.0
-            : state.override === 'mute' ? 0.0
-            : state.fader / 100
-    return m === 0.0
+    if (!group) return null
+    return groupStates[group.id]?.override ?? null
   }, [groups, groupStates])
 
   const sorted = [...fixtures].sort((a, b) => a.channel - b.channel)
@@ -218,7 +214,7 @@ export function MainView({ fixtures, scenes, groups, onScenesChange, onFixturesC
                 onChange={(v) => handleSetChannel(fixture, v)}
                 onRename={(name) => handleFixtureRename(fixture, name)}
                 groupColor={getFixtureGroupColor(fixture.id)}
-                groupMuted={isFixtureMuted(fixture.id)}
+                groupOverride={getFixtureOverride(fixture.id)}
               />
             ))}
             {fixtures.length === 0 && (

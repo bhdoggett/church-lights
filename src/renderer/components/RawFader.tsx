@@ -9,10 +9,10 @@ interface Props {
   onChange: (value: number) => void
   onRename?: (name: string) => void
   groupColor?: string
-  groupMuted?: boolean
+  groupOverride?: 'full' | 'mute' | null
 }
 
-export function RawFader({ channel, value, label, onChange, onRename, groupColor, groupMuted }: Props) {
+export function RawFader({ channel, value, label, onChange, onRename, groupColor, groupOverride }: Props) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
@@ -42,13 +42,13 @@ export function RawFader({ channel, value, label, onChange, onRename, groupColor
       className={[
         styles.fader,
         groupColor ? styles.grouped : '',
-        groupMuted ? styles.muted : '',
+        groupOverride === 'mute' ? styles.muted : '',
       ].filter(Boolean).join(' ')}
       style={groupColor ? { '--group-color': groupColor } as React.CSSProperties : undefined}
     >
       <div className={styles.valueRow}>
-        <span className={`${styles.value}${value > 0 ? ` ${styles.active}` : ''}`}>
-          {value}
+        <span className={`${styles.value}${value > 0 || groupOverride === 'full' ? ` ${styles.active}` : ''}`}>
+          {groupOverride === 'full' ? 255 : groupOverride === 'mute' ? 0 : value}
         </span>
         {groupColor && (
           <span
@@ -59,7 +59,7 @@ export function RawFader({ channel, value, label, onChange, onRename, groupColor
           />
         )}
       </div>
-      <Slider value={value} onChange={onChange} />
+      <Slider value={value} onChange={onChange} disabled={groupOverride !== null && groupOverride !== undefined} />
       <button
         className={`${styles.toggleBtn}${value > 0 ? ` ${styles.on}` : ''}`}
         aria-label="toggle"
@@ -68,7 +68,11 @@ export function RawFader({ channel, value, label, onChange, onRename, groupColor
       >
         <span
           className={styles.toggleDot}
-          style={{ background: `rgba(255,255,255,${value / 255})` }}
+          style={{
+            background: groupOverride === 'full'
+              ? 'rgba(255,255,255,1)'
+              : `rgba(255,255,255,${value / 255})`,
+          }}
         />
       </button>
       <div

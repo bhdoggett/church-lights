@@ -5,7 +5,7 @@ import { getConfig, saveFixture, deleteFixture, saveScene, deleteScene, setCompa
 import { exportShow, importShow } from './show'
 import { listSerialPorts } from './ports'
 import type { DmxManager } from './dmx'
-import type { Fixture, SaveSceneArgs, SetChannelArgs, UpdateSceneArgs, Group } from '../src/shared/types'
+import type { Fixture, SaveSceneArgs, SetChannelArgs, UpdateSceneArgs, Group, GroupChannelOverride } from '../src/shared/types'
 
 export function registerIpcHandlers(dmxManager: DmxManager, onReconnect: (path: string) => void): void {
   ipcMain.handle('config:get', () => getConfig())
@@ -94,7 +94,7 @@ export function registerIpcHandlers(dmxManager: DmxManager, onReconnect: (path: 
     deleteGroup(id)
   })
 
-  ipcMain.handle('group:setMultipliers', (_e, map: Record<string, number>) => {
-    dmxManager.setGroupMultipliers(map)
+  ipcMain.handle('group:setOverrides', (_e, map: Record<string, GroupChannelOverride>) => {
+    dmxManager.setGroupOverrides(map)
   })
 }

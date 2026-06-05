@@ -1,4 +1,4 @@
-import type { Fixture, Config, Scene, SaveSceneArgs, SetChannelArgs, DmxStatus, UpdateSceneArgs, Group } from './types'
+import type { Fixture, Config, Scene, SaveSceneArgs, SetChannelArgs, DmxStatus, UpdateSceneArgs, Group, GroupChannelOverride } from './types'
 
 declare global {
   interface Window {
@@ -19,7 +19,7 @@ declare global {
       listPorts: () => Promise<string[]>
       saveGroup: (group: Group) => Promise<Group[]>
       deleteGroup: (id: string) => Promise<void>
-      setGroupMultipliers: (map: Record<string, number>) => Promise<void>
+      setGroupOverrides: (map: Record<string, GroupChannelOverride>) => Promise<void>
       exportShow: () => Promise<boolean>
       importShow: () => Promise<Config | null>
     }

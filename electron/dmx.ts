@@ -1,5 +1,5 @@
 import { SerialPort } from 'serialport'
-import type { DmxStatus } from '../src/shared/types'
+import type { DmxStatus, GroupChannelOverride } from '../src/shared/types'
 
 const START = 0x7e
 const END = 0xe7
@@ -19,7 +19,7 @@ export class DmxManager {
   private sendInterval: ReturnType<typeof setInterval> | null = null
   private status: DmxStatus = 'disconnected'
   private onStatusChange?: (status: DmxStatus) => void
-  private groupMultipliers: Record<string, number> = {}
+  private groupOverrides: Record<string, GroupChannelOverride> = {}
 
   connect(devicePath: string, outputPort: 0 | 1 | 2, onStatus: (s: DmxStatus) => void): void {
     this.onStatusChange = onStatus
@@ -66,16 +66,20 @@ export class DmxManager {
     }
   }
 
+  private applyOverride(universe: 0 | 1, channel: number): number {
+    const key = `${universe}-${channel}`
+    const o = this.groupOverrides[key]
+    if (!o) return this.universes[universe][channel] ?? 0
+    if (o.kind === 'full') return 255
+    if (o.kind === 'mute') return 0
+    return this.clampValue(Math.round((this.universes[universe][channel] ?? 0) * o.multiplier))
+  }
+
   private buildPacket(): Buffer {
     const label = PORT_LABELS[this.outputPort]
-    // Merge both universe buffers into one — avoids alternating zeros/values
     const merged = Buffer.alloc(513, 0)
     for (let i = 1; i <= 512; i++) {
-      const mU0 = this.groupMultipliers[`0-${i}`] ?? 1.0
-      const mU1 = this.groupMultipliers[`1-${i}`] ?? 1.0
-      const effectiveU0 = this.clampValue(Math.round((this.universes[0][i] ?? 0) * mU0))
-      const effectiveU1 = this.clampValue(Math.round((this.universes[1][i] ?? 0) * mU1))
-      merged[i] = Math.max(effectiveU0, effectiveU1)
+      merged[i] = Math.max(this.applyOverride(0, i), this.applyOverride(1, i))
     }
     const hdr = Buffer.from([
       START,
@@ -166,14 +170,12 @@ export class DmxManager {
     return Math.max(0, Math.min(255, value))
   }
 
-  setGroupMultipliers(map: Record<string, number>): void {
-    this.groupMultipliers = { ...map }
+  setGroupOverrides(map: Record<string, GroupChannelOverride>): void {
+    this.groupOverrides = { ...map }
   }
 
   getEffectiveValue(universe: 0 | 1, channel: number): number {
-    const raw = this.universes[universe][channel] ?? 0
-    const m = this.groupMultipliers[`${universe}-${channel}`] ?? 1.0
-    return this.clampValue(Math.round(raw * m))
+    return this.clampValue(this.applyOverride(universe, channel))
   }
 
   private setStatus(status: DmxStatus): void {
