@@ -133,9 +133,13 @@ export function MainView({ fixtures, scenes, groups, onScenesChange, onFixturesC
     onScenesChange(reordered)
   }, [ipc, onScenesChange])
 
-  const handleAddFixtures = useCallback(async (newFixtures: Fixture[]) => {
-    const saved = await Promise.all(newFixtures.map((f) => ipc.updateFixture(f)))
-    onFixturesChange([...fixtures, ...saved])
+  const handleEditFixtures = useCallback(async (toAdd: Fixture[], toRemoveIds: string[], toUpdate: Fixture[]) => {
+    const added = await Promise.all(toAdd.map((f) => ipc.updateFixture(f)))
+    await Promise.all(toRemoveIds.map((id) => ipc.deleteFixture(id)))
+    const updated = await Promise.all(toUpdate.map((f) => ipc.updateFixture(f)))
+    let next = fixtures.filter((f) => !toRemoveIds.includes(f.id))
+    next = next.map((f) => updated.find((u) => u.id === f.id) ?? f)
+    onFixturesChange([...next, ...added])
     setAddingFixtures(false)
   }, [fixtures, ipc, onFixturesChange])
 
@@ -232,7 +236,7 @@ export function MainView({ fixtures, scenes, groups, onScenesChange, onFixturesC
           />
           <div className={styles.addFixtureRow}>
             <button className={styles.addFixtureBtn} onClick={() => setAddingFixtures(true)}>
-              + Add Fixtures
+              Edit Fixtures
             </button>
           </div>
           <div className={styles.fixtures}>
@@ -258,7 +262,7 @@ export function MainView({ fixtures, scenes, groups, onScenesChange, onFixturesC
       {addingFixtures && (
         <AddFixturesModal
           existingFixtures={fixtures}
-          onAdd={handleAddFixtures}
+          onApply={handleEditFixtures}
           onClose={() => setAddingFixtures(false)}
         />
       )}
