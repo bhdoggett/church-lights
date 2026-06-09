@@ -28,7 +28,10 @@ export function CompanionModal({ scenes, port, devicePath, ports, dmxOutputPort,
     setRefreshError(null)
     try {
       const found = await window.electronAPI.listPorts()
-      setDetectedPorts(found)
+      const enttec = found.find((p) => /cu\.usbserial-EN/.test(p))
+      const sorted = enttec ? [enttec, ...found.filter((p) => p !== enttec)] : found
+      setDetectedPorts(sorted)
+      if (enttec) setDraftPath(enttec)
       if (found.length === 0) setRefreshError('No USB serial devices found in /dev')
     } catch (e) {
       setRefreshError(String(e))

@@ -11,3 +11,11 @@ export function listSerialPorts(): string[] {
     return []
   }
 }
+
+export function isEnttecPort(path: string): boolean {
+  return /cu\.usbserial-EN/.test(path)
+}
+
+export function findEnttecPort(): string | undefined {
+  return listSerialPorts().find(isEnttecPort)
+}

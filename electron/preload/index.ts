@@ -20,6 +20,10 @@ const api = {
     ipcRenderer.on('dmx:status', (_e, status) => cb(status))
   },
 
+  onDeviceAutoConnected: (cb: (path: string) => void) => {
+    ipcRenderer.on('device:autoConnected', (_e, path) => cb(path))
+  },
+
   setDevicePath: (path: string) => ipcRenderer.invoke('config:setDevicePath', { path }),
   setDmxOutputPort: (port: 0 | 1 | 2) => ipcRenderer.invoke('config:setDmxOutputPort', { port }),
 

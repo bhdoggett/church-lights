@@ -17,6 +17,9 @@ export function App() {
   useEffect(() => {
     window.electronAPI.getConfig().then(setConfig)
     window.electronAPI.onDmxStatus(setDmxStatus)
+    window.electronAPI.onDeviceAutoConnected((path) =>
+      setConfig((c) => c ? { ...c, devicePath: path } : c)
+    )
   }, [])
 
   if (!config) {

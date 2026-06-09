@@ -3,7 +3,9 @@ import { join } from 'path'
 import { DmxManager } from '../dmx'
 import { createCompanionServer } from '../server'
 import { registerIpcHandlers } from '../ipc'
-import { getConfig } from '../store'
+import { getConfig, setDevicePath } from '../store'
+import { findEnttecPort } from '../ports'
+import type { DmxStatus } from '../../src/shared/types'
 
 // Suppress unhandled serial port errors so Electron's JS error dialog never fires.
 process.on('uncaughtException', (err) => {
@@ -12,8 +14,12 @@ process.on('uncaughtException', (err) => {
 
 let mainWindow: BrowserWindow | null = null
 const dmxManager = new DmxManager()
+let currentDmxStatus: DmxStatus = 'disconnected'
+let lastAutoConnectAttempt: string | null = null
 
-function sendDmxStatus(status: string): void {
+function sendDmxStatus(status: DmxStatus): void {
+  currentDmxStatus = status
+  if (status === 'disconnected' || status === 'error') lastAutoConnectAttempt = null
   mainWindow?.webContents.send('dmx:status', status)
 }
 
@@ -69,8 +75,28 @@ app.whenReady().then(() => {
     console.log(`Companion server listening on port ${config.companionPort}`)
   })
 
-  // Only connect if a device path has been configured
-  tryConnect(config.devicePath)
+  // On startup, auto-connect to Enttec if no path configured yet
+  if (!config.devicePath) {
+    const enttecPort = findEnttecPort()
+    if (enttecPort) {
+      setDevicePath(enttecPort)
+      tryConnect(enttecPort)
+      lastAutoConnectAttempt = enttecPort
+    }
+  } else {
+    tryConnect(config.devicePath)
+  }
+
+  // Poll for Enttec device hotplug (fs.watch doesn't fire on macOS devfs)
+  setInterval(() => {
+    if (currentDmxStatus === 'connected') return
+    const port = findEnttecPort()
+    if (!port || port === lastAutoConnectAttempt) return
+    lastAutoConnectAttempt = port
+    setDevicePath(port)
+    tryConnect(port)
+    mainWindow?.webContents.send('device:autoConnected', port)
+  }, 3000)
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
