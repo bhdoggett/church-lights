@@ -94,6 +94,24 @@
   padding: var(--space-4) 0;
 }
 
+.dropTarget {
+  border: 2px dashed var(--accent);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  min-height: 80px;
+  justify-content: center;
+  align-items: center;
+}
+
+.dropHint {
+  font-size: 13px;
+  color: var(--accent);
+  text-align: center;
+  padding: var(--space-4) 0;
+  font-weight: 600;
+  pointer-events: none;
+}
+
 .divider {
   height: 1px;
   background: var(--border-subtle);

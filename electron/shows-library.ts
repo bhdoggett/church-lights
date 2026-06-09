@@ -18,6 +18,10 @@ function ensureDir(): string {
   return dir
 }
 
+export function ensureShowsDir(): void {
+  ensureDir()
+}
+
 function showPath(name: string): string {
   return join(getShowsDir(), `${name}.json`)
 }

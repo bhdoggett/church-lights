@@ -5,6 +5,7 @@ import { createCompanionServer } from '../server'
 import { registerIpcHandlers } from '../ipc'
 import { getConfig, setDevicePath } from '../store'
 import { findEnttecPort } from '../ports'
+import { ensureShowsDir } from '../shows-library'
 import type { DmxStatus } from '../../src/shared/types'
 
 // Suppress unhandled serial port errors so Electron's JS error dialog never fires.
@@ -55,6 +56,7 @@ function tryConnect(devicePath: string): void {
 }
 
 app.whenReady().then(() => {
+  ensureShowsDir()
   registerIpcHandlers(dmxManager, (newPath) => {
     tryConnect(newPath)
   })

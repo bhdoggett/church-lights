@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Modal } from './Modal'
 import type { Config, ShowInfo } from '../../shared/types'
 import styles from './ShowsModal.module.css'
@@ -16,12 +16,36 @@ function formatDate(ms: number): string {
   })
 }
 
+function parseShowFile(file: File): Promise<{ config: Config; name: string }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const raw = JSON.parse(e.target?.result as string)
+        if (!Array.isArray(raw.fixtures) || !Array.isArray(raw.scenes)) {
+          reject(new Error('Not a valid show file'))
+          return
+        }
+        const config: Config = { groups: [], ...raw }
+        const name = file.name.replace(/\.json$/i, '')
+        resolve({ config, name })
+      } catch {
+        reject(new Error('Could not parse file'))
+      }
+    }
+    reader.onerror = () => reject(new Error('Could not read file'))
+    reader.readAsText(file)
+  })
+}
+
 export function ShowsModal({ onLoad, onSaved, onNew, onClose }: Props) {
   const [shows, setShows] = useState<ShowInfo[]>([])
   const [newName, setNewName] = useState('')
   const [saving, setSaving] = useState(false)
   const [resetting, setResetting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [dragging, setDragging] = useState(false)
+  const dragCounter = useRef(0)
 
   const refresh = useCallback(async () => {
     try {
@@ -84,6 +108,40 @@ export function ShowsModal({ onLoad, onSaved, onNew, onClose }: Props) {
     }
   }
 
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault()
+    dragCounter.current++
+    if (e.dataTransfer.types.includes('Files')) setDragging(true)
+  }
+
+  const handleDragLeave = () => {
+    dragCounter.current--
+    if (dragCounter.current === 0) setDragging(false)
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+  }
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault()
+    dragCounter.current = 0
+    setDragging(false)
+    const file = e.dataTransfer.files[0]
+    if (!file || !file.name.endsWith('.json')) {
+      setError('Drop a .json show file')
+      return
+    }
+    setError(null)
+    try {
+      const { config, name } = await parseShowFile(file)
+      onLoad(config, name)
+      onClose()
+    } catch (err) {
+      setError(String(err))
+    }
+  }
+
   return (
     <Modal title="Shows" onClose={onClose} minWidth="420px" maxWidth="520px">
       {error && (
@@ -98,26 +156,38 @@ export function ShowsModal({ onLoad, onSaved, onNew, onClose }: Props) {
       >
         {resetting ? 'Clearing…' : '+ New Show'}
       </button>
-      <div className={styles.showList}>
-        {shows.length === 0 && (
-          <p className={styles.empty}>No saved shows yet.</p>
+      <div
+        className={`${styles.showList}${dragging ? ` ${styles.dropTarget}` : ''}`}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
+      >
+        {dragging ? (
+          <p className={styles.dropHint}>Drop to load show</p>
+        ) : (
+          <>
+            {shows.length === 0 && (
+              <p className={styles.empty}>No saved shows yet.</p>
+            )}
+            {shows.map((show) => (
+              <div key={show.name} className={styles.showRow}>
+                <span className={styles.showName}>{show.name}</span>
+                <span className={styles.showDate}>{formatDate(show.modifiedAt)}</span>
+                <button className={styles.loadBtn} onClick={() => handleLoad(show.name)}>
+                  Load
+                </button>
+                <button
+                  className={styles.deleteBtn}
+                  onClick={() => handleDelete(show.name)}
+                  title="Delete show"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </>
         )}
-        {shows.map((show) => (
-          <div key={show.name} className={styles.showRow}>
-            <span className={styles.showName}>{show.name}</span>
-            <span className={styles.showDate}>{formatDate(show.modifiedAt)}</span>
-            <button className={styles.loadBtn} onClick={() => handleLoad(show.name)}>
-              Load
-            </button>
-            <button
-              className={styles.deleteBtn}
-              onClick={() => handleDelete(show.name)}
-              title="Delete show"
-            >
-              ×
-            </button>
-          </div>
-        ))}
       </div>
       <div className={styles.divider} />
       <div className={styles.saveRow}>
